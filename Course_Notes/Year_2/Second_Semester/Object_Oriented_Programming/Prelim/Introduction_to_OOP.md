@@ -1,7 +1,7 @@
 # Introduction to Object-Oriented Programming (OOP) Fundamentals
 
 ## 📋 Summary
-* **Core Concept:** Object-Oriented Programming is a programming paradigm based on objects and classes, designed for developing complex, large-scale systems through encapsulation, inheritance, and polymorphism.
+* **Core Concept:** Object-Oriented Programming is a programming paradigm based on objects and classes, designed for developing complex, large-scale systems through encapsulation, inheritance, polymorphism, and abstraction.
 
 > **Takeaways:** OOP organizes code into reusable classes that serve as blueprints for creating objects. Each object contains both data (attributes) and behavior (methods), enabling modular and maintainable software design.
 
@@ -21,10 +21,12 @@
 | **Encapsulation** | Packing data and methods into a single component | Data protection and information hiding |
 | **Inheritance** | Parent-child relationship between classes | Code reusability and hierarchical organization |
 | **Polymorphism** | Objects assuming different forms | Flexibility and extensibility |
+| **Abstraction** | Hiding complex implementation details, exposing only essential features | Simplicity and reduced complexity |
 
 * **Encapsulation:** The process of packing data and methods into a single component and protecting that data from outside access.
 * **Inheritance:** A concept where classes exist in a parent-child relationship, allowing for hierarchical structures (e.g., a "Car" is a child of "Vehicle").
 * **Polymorphism:** The ability of an object to assume many different forms, such as different shapes (Line, Circle) sharing a common "Draw" method.
+* **Abstraction:** The process of hiding the internal implementation details of a class and exposing only the necessary, relevant features to the user. It allows the programmer to focus on *what* an object does rather than *how* it does it (e.g., a user calls `drive()` without needing to know the internal engine mechanics).
 
 ## ❓ Why we use it
 
@@ -136,6 +138,8 @@ Account myAccount = new Account("123456", 1000.0);
 myAccount.deposit(500.0);
 System.out.println(myAccount.getBalance()); // Output: 1500.0
 ```
+
+> **Abstraction in this example:** The user of the `Account` class calls `deposit()` and `getBalance()` without knowing the internal logic that validates amounts or manages the `balance` field. The internal details are hidden — only the essential interface is exposed.
 
 ## References
 
