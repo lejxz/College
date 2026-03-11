@@ -5,6 +5,8 @@
 package PharmacyPackage;
 
 /**
+ * Pharmacy Management System - Medicine Inventory Form
+ * This form allows users to add, view, and manage medicines in the pharmacy system.
  *
  * @author joopa04
  */
@@ -20,7 +22,14 @@ public class PharmacyForm extends javax.swing.JFrame {
      */
     public PharmacyForm() {
         initComponents();
+        initializeTableModel();
         setLocationRelativeTo(null);
+    }
+
+    /**
+     * Initialize the table model with proper configuration
+     */
+    private void initializeTableModel() {
         tableModel = new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {"#", "Generic Name", "Brand Name", "Description", "Dosage (mg)"}
@@ -32,7 +41,7 @@ public class PharmacyForm extends javax.swing.JFrame {
         };
         medicineTable.setModel(tableModel);
 
-        // Set column widths
+        // Set column widths for better visibility
         medicineTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         medicineTable.getColumnModel().getColumn(1).setPreferredWidth(130);
         medicineTable.getColumnModel().getColumn(2).setPreferredWidth(130);
@@ -71,9 +80,8 @@ public class PharmacyForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("My Pharmacy — Medicine List");
-        setResizable(false);
 
-        mainPanel.setBackground(new java.awt.Color(245, 248, 255));
+        mainPanel.setBackground(new java.awt.Color(255, 255, 255));
         mainPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
         mainPanel.setLayout(new java.awt.BorderLayout(10, 10));
 
@@ -92,7 +100,7 @@ public class PharmacyForm extends javax.swing.JFrame {
         formPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Add New Medicine"));
         formPanel.setMinimumSize(new java.awt.Dimension(200, 500));
         formPanel.setName(""); // NOI18N
-        formPanel.setOpaque(false);
+        formPanel.setPreferredSize(new java.awt.Dimension(350, 300));
         formPanel.setLayout(new java.awt.GridBagLayout());
 
         lblTitle.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -112,6 +120,7 @@ public class PharmacyForm extends javax.swing.JFrame {
         formPanel.add(lblGeneric, gridBagConstraints);
 
         txtGeneric.setColumns(15);
+        txtGeneric.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -146,6 +155,13 @@ public class PharmacyForm extends javax.swing.JFrame {
         formPanel.add(lblDesc, gridBagConstraints);
 
         txtDesc.setColumns(15);
+        txtDesc.setToolTipText("");
+        txtDesc.setMinimumSize(new java.awt.Dimension(50, 22));
+        txtDesc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDescActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -206,16 +222,18 @@ public class PharmacyForm extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
         formPanel.add(btnPanel, gridBagConstraints);
 
-        mainPanel.add(formPanel, java.awt.BorderLayout.CENTER);
+        mainPanel.add(formPanel, java.awt.BorderLayout.LINE_END);
 
+        scrollPane.setBackground(new java.awt.Color(255, 255, 255));
         scrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder("Medicine List"));
 
+        medicineTable.setBackground(new java.awt.Color(255, 255, 255));
         medicineTable.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         medicineTable.setRowHeight(24);
         medicineTable.setSelectionBackground(new java.awt.Color(180, 210, 255));
         scrollPane.setViewportView(medicineTable);
 
-        mainPanel.add(scrollPane, java.awt.BorderLayout.LINE_END);
+        mainPanel.add(scrollPane, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
@@ -229,6 +247,10 @@ public class PharmacyForm extends javax.swing.JFrame {
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         clearFields();
     }//GEN-LAST:event_btnClearActionPerformed
+
+    private void txtDescActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDescActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDescActionPerformed
 
     private void addMedicine() {
         String generic = txtGeneric.getText().trim();
