@@ -53,24 +53,44 @@
 
 ## 💻 Usage / Example
 
-```python
-# Example: Checking for duplicate elements using Instance Simplification (sorting)
+```c
+#include <stdio.h>
+#include <stdlib.h>
 
-def has_duplicates(arr):
-    # Transform: Sort the array — O(n log n)
-    sorted_arr = sorted(arr)
+/* Comparator for qsort */
+int cmp(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
 
-    # Conquer: Check adjacent elements — O(n)
-    for i in range(len(sorted_arr) - 1):
-        if sorted_arr[i] == sorted_arr[i + 1]:
-            return True
-    return False
+/* Instance Simplification: sort first, then check adjacent elements */
+int has_duplicates(int arr[], int n) {
+    int *sorted = malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) sorted[i] = arr[i];
 
-# Without transformation: O(n^2) brute-force comparison
-# With transformation (sort first): O(n log n)
+    /* Transform: sort the array — O(n log n) */
+    qsort(sorted, n, sizeof(int), cmp);
 
-print(has_duplicates([4, 2, 7, 2, 9]))  # True
-print(has_duplicates([1, 3, 5, 7, 9]))  # False
+    /* Conquer: check adjacent elements — O(n) */
+    int found = 0;
+    for (int i = 0; i < n - 1; i++) {
+        if (sorted[i] == sorted[i + 1]) { found = 1; break; }
+    }
+
+    free(sorted);
+    return found;
+}
+
+int main(void) {
+    int a[] = {4, 2, 7, 2, 9};
+    int b[] = {1, 3, 5, 7, 9};
+
+    printf("has_duplicates(a): %d\n", has_duplicates(a, 5)); /* 1 */
+    printf("has_duplicates(b): %d\n", has_duplicates(b, 5)); /* 0 */
+
+    /* Without transformation: O(n^2) brute-force comparison */
+    /* With transformation (sort first): O(n log n)           */
+    return 0;
+}
 ```
 
 
