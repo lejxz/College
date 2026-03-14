@@ -1,4 +1,4 @@
-# Career Preparation Roadmap
+# College Repo
 
 **Major:** Computer Science (Double Major: AI & Cybersecurity)  
 **Career Goal:** Entering the AR/VR field  
