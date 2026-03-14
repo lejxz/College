@@ -1,4 +1,3 @@
-
 # Python NumPy — Numerical Computing & Array Operations
 
 ## 📋 Summary
