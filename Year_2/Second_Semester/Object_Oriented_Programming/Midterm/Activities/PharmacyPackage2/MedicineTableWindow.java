@@ -8,12 +8,20 @@ public class MedicineTableWindow extends javax.swing.JFrame {
     private final List<Medicine> medicineList;
     private final javax.swing.table.DefaultTableModel tableModel;
 
-    public MedicineTableWindow(PharmacyForm parentForm,
-            List<Medicine> medicineList,
-            javax.swing.table.DefaultTableModel tableModel) {
+    public MedicineTableWindow(PharmacyForm parentForm, List<Medicine> medicineList) {
         this.parentForm = parentForm;
         this.medicineList = medicineList;
-        this.tableModel = tableModel;
+        this.tableModel = new javax.swing.table.DefaultTableModel(
+            new Object [][] {},
+            new String [] {
+                "#", "Generic Name", "Brand Name", "Description", "Dosage (mg)", "Qty", "Price"
+            }
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
         initComponents();
         configureTable();
@@ -28,6 +36,8 @@ public class MedicineTableWindow extends javax.swing.JFrame {
         medicineTable.getColumnModel().getColumn(2).setPreferredWidth(130);
         medicineTable.getColumnModel().getColumn(3).setPreferredWidth(220);
         medicineTable.getColumnModel().getColumn(4).setPreferredWidth(90);
+        medicineTable.getColumnModel().getColumn(5).setPreferredWidth(60);
+        medicineTable.getColumnModel().getColumn(6).setPreferredWidth(80);
     }
 
     public final void refreshTable() {
@@ -39,7 +49,9 @@ public class MedicineTableWindow extends javax.swing.JFrame {
                 medicine.getGenericName(),
                 medicine.getBrandName(),
                 medicine.getDescription(),
-                String.format("%.1f", medicine.getMg())
+                String.format("%.1f", medicine.getMg()),
+                medicine.getQuantity(),
+                String.format("%.2f", medicine.getPrice())
             });
         }
     }
@@ -54,10 +66,13 @@ public class MedicineTableWindow extends javax.swing.JFrame {
         scrollPane = new javax.swing.JScrollPane();
         medicineTable = new javax.swing.JTable();
         footerPanel = new javax.swing.JPanel();
+        btnDelete = new javax.swing.JButton();
+        btnSell = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("My Pharmacy - Medicine List");
+        setMinimumSize(new java.awt.Dimension(800, 500));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -69,6 +84,7 @@ public class MedicineTableWindow extends javax.swing.JFrame {
         mainPanel.setLayout(new java.awt.BorderLayout(0, 8));
 
         headerPanel.setBackground(new java.awt.Color(255, 255, 255));
+        headerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Title"));
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(153, 0, 255));
@@ -88,6 +104,30 @@ public class MedicineTableWindow extends javax.swing.JFrame {
 
         footerPanel.setBackground(new java.awt.Color(255, 255, 255));
         footerPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnDelete.setBackground(new java.awt.Color(180, 50, 50));
+        btnDelete.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        btnDelete.setForeground(new java.awt.Color(255, 255, 255));
+        btnDelete.setText("Delete Medicine");
+        btnDelete.setFocusPainted(false);
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+        footerPanel.add(btnDelete);
+
+        btnSell.setBackground(new java.awt.Color(24, 142, 88));
+        btnSell.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        btnSell.setForeground(new java.awt.Color(255, 255, 255));
+        btnSell.setText("Sell Medicine");
+        btnSell.setFocusPainted(false);
+        btnSell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSellActionPerformed(evt);
+            }
+        });
+        footerPanel.add(btnSell);
 
         btnBack.setBackground(new java.awt.Color(30, 120, 200));
         btnBack.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
@@ -116,6 +156,59 @@ public class MedicineTableWindow extends javax.swing.JFrame {
         returnToForm();
     }//GEN-LAST:event_formWindowClosing
 
+    private void btnSellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSellActionPerformed
+        openSellWindow();
+    }//GEN-LAST:event_btnSellActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        deleteSelectedMedicine();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void openSellWindow() {
+        int selectedRow = medicineTable.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Select a medicine first.", "Selection Required",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Medicine selectedMedicine = medicineList.get(selectedRow);
+        SellMedicineWindow sellWindow = new SellMedicineWindow(this, selectedMedicine);
+        sellWindow.setLocationRelativeTo(this);
+        sellWindow.setVisible(true);
+    }
+
+    private void deleteSelectedMedicine() {
+        int selectedRow = medicineTable.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Select a medicine to delete.", "Selection Required",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Medicine selectedMedicine = medicineList.get(selectedRow);
+        String medicineName = selectedMedicine.getBrandName();
+
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Delete medicine \"" + medicineName + "\"?",
+            "Confirm Delete",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+
+        if (confirm != javax.swing.JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        medicineList.remove(selectedRow);
+        refreshTable();
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Medicine deleted successfully.", "Deleted",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void returnToForm() {
         parentForm.setVisible(true);
         dispose();
@@ -123,6 +216,8 @@ public class MedicineTableWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnSell;
     private javax.swing.JPanel footerPanel;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JLabel lblTitle;

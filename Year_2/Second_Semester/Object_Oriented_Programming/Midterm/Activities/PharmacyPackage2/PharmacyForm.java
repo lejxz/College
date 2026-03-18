@@ -13,7 +13,6 @@ public class PharmacyForm extends javax.swing.JFrame {
     private final java.util.ArrayList<Medicine> medicineList =
             new java.util.ArrayList<Medicine>();
 
-    private javax.swing.table.DefaultTableModel tableModel;
     private MedicineTableWindow tableWindow;
 
     /**
@@ -21,23 +20,7 @@ public class PharmacyForm extends javax.swing.JFrame {
      */
     public PharmacyForm() {
         initComponents();
-        initializeTableModel();
         setLocationRelativeTo(null);
-    }
-
-    /**
-     * Initialize the table model with proper configuration
-     */
-    private void initializeTableModel() {
-        tableModel = new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] {"#", "Generic Name", "Brand Name", "Description", "Dosage (mg)"}
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
     }
 
     /**
@@ -63,6 +46,10 @@ public class PharmacyForm extends javax.swing.JFrame {
         txtDesc = new javax.swing.JTextField();
         lblMg = new javax.swing.JLabel();
         txtMg = new javax.swing.JTextField();
+        lblQuantity = new javax.swing.JLabel();
+        txtQuantity = new javax.swing.JTextField();
+        lblPrice = new javax.swing.JLabel();
+        txtPrice = new javax.swing.JTextField();
         btnPanel = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -183,6 +170,40 @@ public class PharmacyForm extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
         formPanel.add(txtMg, gridBagConstraints);
 
+        lblQuantity.setText("Quantity:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
+        formPanel.add(lblQuantity, gridBagConstraints);
+
+        txtQuantity.setColumns(10);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
+        formPanel.add(txtQuantity, gridBagConstraints);
+
+        lblPrice.setText("Unit Price:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
+        formPanel.add(lblPrice, gridBagConstraints);
+
+        txtPrice.setColumns(10);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 8);
+        formPanel.add(txtPrice, gridBagConstraints);
+
         btnPanel.setBackground(new java.awt.Color(255, 255, 255));
         btnPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
 
@@ -224,7 +245,7 @@ public class PharmacyForm extends javax.swing.JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
@@ -260,7 +281,7 @@ public class PharmacyForm extends javax.swing.JFrame {
 
     private void openMedicineListWindow() {
         if (tableWindow == null || !tableWindow.isDisplayable()) {
-            tableWindow = new MedicineTableWindow(this, medicineList, tableModel);
+            tableWindow = new MedicineTableWindow(this, medicineList);
         } else {
             tableWindow.refreshTable();
         }
@@ -274,8 +295,11 @@ public class PharmacyForm extends javax.swing.JFrame {
         String brand   = txtBrand.getText().trim();
         String desc    = txtDesc.getText().trim();
         String mgText  = txtMg.getText().trim();
+        String quantityText = txtQuantity.getText().trim();
+        String priceText = txtPrice.getText().trim();
 
-        if (generic.isEmpty() || brand.isEmpty() || desc.isEmpty() || mgText.isEmpty()) {
+        if (generic.isEmpty() || brand.isEmpty() || desc.isEmpty()
+            || mgText.isEmpty() || quantityText.isEmpty() || priceText.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this,
                 "All fields are required.", "Input Error",
                 javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -293,15 +317,34 @@ public class PharmacyForm extends javax.swing.JFrame {
             return;
         }
 
-        Medicine m = new Medicine(generic, brand, desc, mgValue);
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityText);
+            if (quantity <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Quantity must be a valid positive whole number.", "Input Error",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double price;
+        try {
+            price = Double.parseDouble(priceText);
+            if (price <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Unit price must be a valid positive number.", "Input Error",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Medicine m = new Medicine(generic, brand, desc, mgValue, quantity, price);
         medicineList.add(m);
-        tableModel.addRow(new Object[]{
-            medicineList.size(),
-            m.getGenericName(),
-            m.getBrandName(),
-            m.getDescription(),
-            String.format("%.1f", m.getMg())
-        });
+
+        if (tableWindow != null && tableWindow.isDisplayable()) {
+            tableWindow.refreshTable();
+        }
 
         clearFields();
         javax.swing.JOptionPane.showMessageDialog(this,
@@ -314,6 +357,8 @@ public class PharmacyForm extends javax.swing.JFrame {
         txtBrand.setText("");
         txtDesc.setText("");
         txtMg.setText("");
+        txtQuantity.setText("");
+        txtPrice.setText("");
         txtGeneric.requestFocus();
     }
 
@@ -362,6 +407,8 @@ public class PharmacyForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblDesc;
     private javax.swing.JLabel lblGeneric;
     private javax.swing.JLabel lblMg;
+    private javax.swing.JLabel lblPrice;
+    private javax.swing.JLabel lblQuantity;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JLabel programLabel;
@@ -370,5 +417,7 @@ public class PharmacyForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtDesc;
     private javax.swing.JTextField txtGeneric;
     private javax.swing.JTextField txtMg;
+    private javax.swing.JTextField txtPrice;
+    private javax.swing.JTextField txtQuantity;
     // End of variables declaration//GEN-END:variables
 }
